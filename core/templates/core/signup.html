@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>BookSwap | Signup</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {margin:0; padding:0; box-sizing:border-box; font-family: Arial, sans-serif;}
+
+    body {
+      background: url("https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?ixlib=rb-4.0.3&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1920&h=1080&fit=crop") no-repeat center center/cover;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .signup-box {
+      background: rgba(0,0,0,0.8);
+      padding: 40px;
+      border-radius: 6px;
+      width: 380px;
+      color: #fff;
+    }
+
+    .signup-box h2 {
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+
+    .input-box {
+      margin-bottom: 15px;
+    }
+
+    .input-box input {
+      width: 100%;
+      padding: 12px;
+      background: #333;
+      border: none;
+      border-radius: 4px;
+      color: #fff;
+    }
+
+    .signup-btn {
+      width: 100%;
+      padding: 12px;
+      background: #e50914;
+      border: none;
+      border-radius: 4px;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .signup-btn:hover {
+      background: #c40812;
+    }
+
+    .extra-links {
+      margin-top: 15px;
+      font-size: 13px;
+      text-align: center;
+    }
+
+    .extra-links a {
+      color: #b3b3b3;
+      text-decoration: none;
+    }
+
+    .extra-links a:hover {
+      text-decoration: underline;
+    }
+
+    .login-text {
+      margin-top: 20px;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .login-text a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="signup-box">
+    <h2>Create Account</h2>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
+    <form method="POST">
+      {% csrf_token %}
+      <div class="input-box">
+        <input type="text" name="username" placeholder="Username" required>
+      </div>
+      <div class="input-box">
+        <input type="email" name="email" placeholder="Email" required>
+      </div>
+      <div class="input-box">
+        <input type="password" name="password" placeholder="Password" required>
+      </div>
+      <div class="input-box">
+        <input type="password" name="confirm_password" placeholder="Confirm Password" required>
+      </div>
+      <div class="input-box">
+        <input type="text" name="gpay_number" placeholder="GPay Number">
+      </div>
+      <div class="input-box">
+        <input type="text" name="place" placeholder="Place">
+      </div>
+      <button type="submit" class="signup-btn">Sign Up</button>
+    </form>
+
+    <div class="login-text">
+      Already have an account? <a href="{% url 'login' %}">Sign In</a>
+    </div>
+  </div>
+</body>
+</html>
+
+
+
+

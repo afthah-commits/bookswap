@@ -1,0 +1,126 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookSwap Platform</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* ---------------- Hero Section ---------------- */
+        .hero {
+            background: url('https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=1470&q=80') no-repeat center center;
+            background-size: cover;
+            height: 100vh;
+            color: white;
+            display: flex;
+            align-items: center;
+        }
+        .hero-overlay {
+            background-color: rgba(0,0,0,0.6);
+            width: 100%;
+            height: 100%;
+            padding: 50px;
+        }
+        .btn-hero {
+            padding: 12px 30px;
+            font-size: 1.2rem;
+        }
+
+        /* ---------------- Book Cards ---------------- */
+        .card-img-top {
+            height: 250px;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ---------------- Navbar ---------------- -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'home' %}">BookSwap</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                {% if user.is_authenticated %}
+                    <li class="nav-item me-2">
+                        <a class="nav-link btn btn-light text-white fw-bold px-3" href="{% url 'dashboard' %}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link btn btn-danger text-white fw-bold px-3" href="{% url 'logout' %}">Logout</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item me-2">
+                        <a class="nav-link btn btn-light text-white fw-bold px-3" href="{% url 'login' %}">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link btn btn-warning text-white fw-bold px-3" href="{% url 'signup' %}">Signup</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- ---------------- Hero Section ---------------- -->
+<section class="hero">
+    <div class="hero-overlay d-flex flex-column justify-content-center text-center">
+        <h1 class="display-4 fw-bold">Swap, Buy, and Sell Books Easily</h1>
+        <p class="lead mb-4">Connect with fellow readers and discover new books today!</p>
+        <a href="{% url 'signup' %}" class="btn btn-warning btn-hero me-3">Get Started</a>
+    </div>
+</section>
+
+<!-- ---------------- Latest Books Section ---------------- -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="mb-4 text-center">Latest Books</h2>
+        <div class="row">
+            {% for book in latest_books %}
+            <div class="col-md-3 mb-4">
+                <div class="card h-100 shadow-sm">
+                    {% if book.cover %}
+                        <img src="{{ book.cover.url }}" class="card-img-top" alt="{{ book.title }}">
+                    {% else %}
+                        <img src="{% static 'default_book.jpg' %}" class="card-img-top" alt="Default Book">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ book.title|truncatechars:25 }}</h5>
+                        <p class="card-text"><small class="text-muted">{{ book.author }}</small></p>
+                        <p class="card-text">
+                            {% if book.availability == 'swap' %}
+                                <span class="badge bg-success">Swap</span>
+                            {% elif book.availability == 'sell' %}
+                                <span class="badge bg-warning text-dark">Sell ₹{{ book.price }}</span>
+                            {% else %}
+                                <span class="badge bg-info text-dark">Swap & Sell ₹{{ book.price }}</span>
+                            {% endif %}
+                        </p>
+                        <a href="{% url 'book_details' book.id %}" class="btn btn-primary btn-sm w-100">View Details</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-center">No books available at the moment.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- ---------------- Footer ---------------- -->
+<footer class="bg-primary text-white text-center py-4">
+    <div class="container">
+        &copy; {{ now|date:"Y" }} BookSwap Platform. All rights reserved.
+    </div>
+</footer>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+

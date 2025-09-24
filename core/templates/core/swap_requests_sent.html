@@ -1,0 +1,39 @@
+{% load tz %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sent Swap Requests - BookSwap</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+  <div class="container mt-5">
+    <h2>📤 Sent Swap Requests</h2>
+
+    {% if swap_requests %}
+      {% for req in swap_requests %}
+        <div class="card mb-3 shadow-sm">
+          <div class="card-body">
+            <h5>📖 Requested: {{ req.requested_book.title }}</h5>
+            <p>To: <strong>{{ req.owner.username }}</strong></p>
+            <p>Offered: {{ req.offered_book.title|default:"(No book offered)" }}</p>
+            <p>Message: {{ req.message|default:"(No message)" }}</p>
+            {% if req.mobile_number %}
+              <p>📞 Mobile: {{ req.mobile_number }}</p>
+            {% endif %}
+            <p>Status: <span class="badge bg-info">{{ req.status|title }}</span></p>
+            <p class="small text-muted">
+              📅 {{ req.created_at|timezone:"Asia/Kolkata"|date:"M d, Y H:i" }}
+            </p>
+
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p class="text-muted">No swap requests sent yet.</p>
+    {% endif %}
+  </div>
+</body>
+</html>
+
+

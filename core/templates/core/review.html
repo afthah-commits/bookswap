@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book Reviews - BookSwap</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: #f4f6f9;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* ---------------- Sidebar ---------------- */
+    .sidebar {
+      height: 100vh;
+      width: 250px;
+      position: fixed;
+      left: 0;
+      top: 0;
+      background: linear-gradient(180deg, #2e3192 0%, #1bffff 100%);
+      color: #fff;
+      padding: 25px 15px;
+      box-shadow: 4px 0 15px rgba(0,0,0,0.15);
+    }
+
+    .sidebar h3 {
+      text-align: center;
+      font-weight: 700;
+      margin-bottom: 35px;
+      letter-spacing: 1px;
+    }
+
+    .sidebar a {
+      display: flex;
+      align-items: center;
+      color: #fff;
+      padding: 12px 18px;
+      text-decoration: none;
+      margin: 10px 0;
+      border-radius: 12px;
+      font-weight: 500;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .sidebar a:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateX(6px);
+    }
+
+    /* ---------------- Main Content ---------------- */
+    .main-content {
+      margin-left: 270px;
+      padding: 40px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-weight: 700;
+      color: #333;
+    }
+
+    /* Review cards */
+    .review-card {
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+      background: #fff;
+      padding: 20px;
+    }
+
+    .review-card h5 {
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+
+    .star { color: #ffc107; }
+
+    /* Form card */
+    .form-card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      padding: 25px;
+      margin-bottom: 25px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h3>📚 BookSwap</h3>
+    <!-- <a href="{% url 'success' %}">🏠 Home</a> -->
+    <a href="{% url 'dashboard' %}">📊 Dashboard</a>
+    <a href="{% url 'my_books' %}">📚 My Books</a>
+    <a href="{% url 'swap_request' %}">🔄My Swap Requests</a>
+    <a href="{% url 'purchases' %}">🛒 Purchases</a>
+    <a href="{% url 'sales' %}">💰 Sales</a>
+    <a href="{% url 'swap_requests_received' %}">💰 requests_received</a>
+    <a href="{% url 'review' %}">⭐ Reviews</a>
+    <a href="{% url 'settings' %}">⚙ Account Settings</a>
+    <a href="{% url 'update_profile' %}">🚪 payment</a>
+    <a href="{% url 'logout' %}">🚪 Logout</a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <h2>⭐ Book Reviews</h2>
+
+    <!-- Add Review Form -->
+    <div class="form-card">
+      <h4>Add Your Review</h4>
+      <form method="POST">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label class="form-label">Select Book</label>
+          <select name="book" class="form-select" required>
+            {% for book in books %}
+              <option value="{{ book.id }}">{{ book.title }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Rating (1–5)</label>
+          <input type="number" name="rating" class="form-control" min="1" max="5" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Comment</label>
+          <textarea name="comment" class="form-control" rows="3" placeholder="Write your thoughts..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Submit Review</button>
+        <a href="{% url 'dashboard' %}" class="btn btn-warning w-100 mt-2">🚪 Back</a>
+      </form>
+    </div>
+
+    <!-- Display All Reviews -->
+    {% for review in reviews %}
+    <div class="review-card">
+      <h5>{{ review.book.title }} <small class="text-muted">by {{ review.book.author }}</small></h5>
+      <p>
+        {% for i in "12345" %}
+          {% if forloop.counter <= review.rating %}
+            <span class="star">★</span>
+          {% else %}
+            <span class="text-muted">★</span>
+          {% endif %}
+        {% endfor %}
+      </p>
+      <p>{{ review.comment }}</p>
+      <small class="text-muted">Reviewed by {{ review.reviewer.username }} on {{ review.created_at|date:"M d, Y" }}</small>
+    </div>
+    {% empty %}
+      <p class="text-center text-muted">No reviews yet.</p>
+    {% endfor %}
+  </div>
+
+</body>
+</html>
+

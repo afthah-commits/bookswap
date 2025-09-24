@@ -1,0 +1,225 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Settings - BookSwap</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      background-color: #f4f6f9;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    /* ---------------- Sidebar ---------------- */
+    .sidebar {
+      height: 100vh;
+      width: 250px;
+      position: fixed;
+      left: 0;
+      top: 0;
+      background: linear-gradient(180deg, #2e3192 0%, #1bffff 100%);
+      color: #fff;
+      padding: 25px 15px;
+      box-shadow: 4px 0 15px rgba(0,0,0,0.15);
+    }
+
+    .sidebar h3 {
+      text-align: center;
+      font-weight: 700;
+      margin-bottom: 35px;
+      letter-spacing: 1px;
+    }
+
+    .sidebar a {
+      display: flex;
+      align-items: center;
+      color: #fff;
+      padding: 12px 18px;
+      text-decoration: none;
+      margin: 10px 0;
+      border-radius: 12px;
+      font-weight: 500;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .sidebar a:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateX(6px);
+    }
+
+    /* ---------------- Main Content ---------------- */
+    .main-content {
+      margin-left: 270px;
+      padding: 40px;
+    }
+
+    .settings-card {
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      padding: 40px;
+      max-width: 650px;
+      margin: auto;
+    }
+
+    .settings-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .settings-header h2 {
+      font-weight: 700;
+      color: #2c3e50;
+    }
+
+    .settings-header small {
+      color: #7f8c8d;
+    }
+
+    .profile-pic {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid #3498db;
+      margin-bottom: 15px;
+    }
+
+    .form-label {
+      font-weight: 600;
+      color: #2c3e50;
+    }
+
+    .form-control {
+      border-radius: 12px;
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+    }
+
+    .form-control:focus {
+      border-color: #3498db;
+      box-shadow: 0 0 8px rgba(52,152,219,0.3);
+    }
+
+    .btn-save {
+      background: linear-gradient(90deg, #3498db, #2ecc71);
+      border: none;
+      padding: 14px 22px;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #fff;
+      transition: 0.3s;
+      width: 100%;
+    }
+
+    .btn-save:hover {
+      opacity: 0.9;
+      transform: scale(1.02);
+    }
+
+    .qr-preview {
+      max-width: 150px;
+      border-radius: 10px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h3>📚 BookSwap</h3>
+    <!-- <a href="{% url 'success' %}">🏠 Home</a> -->
+    <a href="{% url 'dashboard' %}">📊 Dashboard</a>
+    <a href="{% url 'my_books' %}">📚 My Books</a>
+    <a href="{% url 'swap_request' %}">🔄My Swap Requests</a>
+    <a href="{% url 'purchases' %}">🛒 Purchases</a>
+    <a href="{% url 'sales' %}">💰 Sales</a>
+    <a href="{% url 'swap_requests_received' %}">💰 requests_received</a>
+    <a href="{% url 'review' %}">⭐ Reviews</a>
+    <a href="{% url 'settings' %}">⚙ Account Settings</a>
+    <a href="{% url 'update_profile' %}">🚪 payment</a>
+    <a href="{% url 'logout' %}">🚪 Logout</a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="settings-card">
+      <!-- Header -->
+      <div class="settings-header">
+        {% if profile.avatar %}
+          <img src="{{ profile.avatar.url }}" alt="Profile Picture" class="profile-pic">
+        {% else %}
+          <img src="{% static 'images/default-avatar.png' %}" alt="Default Avatar" class="profile-pic">
+        {% endif %}
+        <h2>{{ request.user.username }}</h2>
+        <small>{{ request.user.email }}</small>
+      </div>
+
+      <!-- Settings Form -->
+      <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="mb-3">
+          <label class="form-label">Username</label>
+          <input type="text" name="username" class="form-control" value="{{ request.user.username }}">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Email</label>
+          <input type="email" name="email" class="form-control" value="{{ request.user.email }}">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">New Password</label>
+          <input type="password" name="password" class="form-control" placeholder="Enter new password">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Profile Picture</label>
+          <input type="file" name="avatar" class="form-control">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">GPay Number</label>
+          <input type="text" name="gpay_number" class="form-control" value="{{ profile.gpay_number }}">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">UPI ID</label>
+          <input type="text" name="upi_id" class="form-control" value="{{ profile.upi_id }}">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">GPay QR Code</label>
+          <input type="file" name="gpay_qr" class="form-control">
+          {% if profile.gpay_qr %}
+            <img src="{{ profile.gpay_qr.url }}" alt="GPay QR" class="qr-preview">
+          {% endif %}
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Place</label>
+          <input type="text" name="place" class="form-control" value="{{ profile.place }}">
+        </div>
+
+        <button type="submit" class="btn-save">💾 Save Changes</button>
+        <a href="{% url 'dashboard' %}" class="btn btn-warning mt-2 w-100">🚪 Back</a>
+      </form>
+    </div>
+  </div>
+
+</body>
+</html>
+
+
+
+
+
+
+
+

@@ -1,0 +1,171 @@
+<!-- templates/core/buy.html -->
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buy {{ book.title }} - BookSwap</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      font-family: 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 50px 20px;
+      color: #fff;
+    }
+    .buy-card {
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(12px);
+      border-radius: 18px;
+      padding: 35px;
+      width: 100%;
+      max-width: 550px;
+      box-shadow: 0 10px 35px rgba(0,0,0,0.3);
+      animation: fadeIn 0.7s ease-in-out;
+    }
+    .buy-card h2 {
+      font-weight: 700;
+      margin-bottom: 25px;
+      text-align: center;
+    }
+    .form-label {
+      font-weight: 600;
+      color: #f8f9fa;
+    }
+    .form-select, .form-control {
+      border-radius: 12px;
+      padding: 12px;
+      border: none;
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+    }
+    .form-select option {
+      color: #000; /* keep dropdown readable */
+    }
+    .form-control:focus, .form-select:focus {
+      background: rgba(255, 255, 255, 0.3);
+      outline: none;
+      box-shadow: 0 0 10px rgba(255,255,255,0.3);
+    }
+    .payment-box {
+      background: rgba(255,255,255,0.15);
+      padding: 15px;
+      border-radius: 12px;
+      margin-top: 12px;
+    }
+    .btn-submit {
+      margin-top: 20px;
+      width: 100%;
+      padding: 14px;
+      font-weight: 600;
+      border-radius: 12px;
+      background: linear-gradient(90deg, #ff9966, #ff5e62);
+      border: none;
+      color: #fff;
+      transition: 0.3s ease-in-out;
+    }
+    .btn-submit:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    }
+    .btn-disabled {
+      background: #999 !important;
+      cursor: not-allowed;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="buy-card">
+    <h2>🛒 Buy "{{ book.title }}"</h2>
+
+    <form action="{% url 'buy_book' book.id %}" method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      {% if book.owner == user %}
+        <button class="btn btn-disabled w-100">❌ Cannot Buy Your Own Book</button>
+      {% else %}
+
+        <!-- Purchaser Mobile Number -->
+        <div class="mb-3">
+          <label class="form-label">📞 Your Mobile Number</label>
+          <input type="tel" name="buyer_mobile" class="form-control" 
+                 placeholder="Enter your mobile number" required pattern="[0-9]{10}">
+          <small class="text-light">We will share this with the seller for delivery/contact.</small>
+        </div>
+
+        <!-- Payment Method -->
+        <div class="mb-3">
+          <label for="payment_method" class="form-label">💳 Select Payment Method:</label>
+          <select name="payment_method" id="payment_method" class="form-select" required onchange="showPaymentInfo()">
+            <option value="" disabled selected>-- Choose Payment Method --</option>
+            <option value="GPay">📱 Google Pay (GPay)</option>
+            <option value="UPI">🔗 UPI</option>
+          </select>
+        </div>
+
+        <!-- GPay QR Code -->
+        <div id="gpay-info" class="payment-box" style="display:none;">
+          <p>Scan this QR code to pay via GPay:</p>
+          {% if seller_profile.gpay_qr %}
+            <img src="{{ seller_profile.gpay_qr.url }}" alt="GPay QR" class="img-fluid rounded" style="max-width:200px;">
+          {% else %}
+            <p class="text-warning">⚠️ QR code not provided.</p>
+          {% endif %}
+          {% if seller_profile.gpay_number %}
+            <p><strong>GPay Number:</strong> {{ seller_profile.gpay_number }}</p>
+          {% endif %}
+        </div>
+
+        <!-- UPI ID -->
+        <div id="upi-info" class="payment-box" style="display:none;">
+          <p>Send payment to this UPI ID:</p>
+          <p><strong>{{ seller_profile.upi_id|default:"Not provided" }}</strong></p>
+        </div>
+
+        <!-- Transaction ID -->
+        <div class="mb-3">
+          <label class="form-label">Transaction ID (UPI Ref ID)</label>
+          <input type="text" name="transaction_id" class="form-control" placeholder="Enter UPI transaction/reference ID" required>
+        </div>
+
+        <!-- Screenshot Upload -->
+        <div class="mb-3">
+          <label class="form-label">Upload Payment Screenshot (Optional)</label>
+          <input type="file" name="screenshot" class="form-control" accept="image/*">
+        </div>
+
+        <!-- Confirm Button -->
+        <button type="submit" class="btn-submit">✅ Confirm & Submit Payment</button>
+
+      {% endif %}
+    </form>
+  </div>
+
+  <script>
+    function showPaymentInfo() {
+      const method = document.getElementById("payment_method").value;
+      document.getElementById("gpay-info").style.display = (method === "GPay") ? "block" : "none";
+      document.getElementById("upi-info").style.display = (method === "UPI") ? "block" : "none";
+    }
+  </script>
+
+</body>
+</html>
+
+
+
+
+
+

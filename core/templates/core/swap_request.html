@@ -1,0 +1,184 @@
+{% load static tz %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Swap Requests - BookSwap</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      background: #f4f6f9;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .sidebar {
+      height: 100vh;
+      width: 250px;
+      position: fixed;
+      left: 0;
+      top: 0;
+      background: linear-gradient(180deg, #2e3192 0%, #1bffff 100%);
+      color: #fff;
+      padding: 25px 15px;
+      box-shadow: 4px 0 15px rgba(0,0,0,0.15);
+    }
+
+    .sidebar h3 {
+      text-align: center;
+      font-weight: 700;
+      margin-bottom: 35px;
+      letter-spacing: 1px;
+    }
+
+    .sidebar a {
+      display: flex;
+      align-items: center;
+      color: #fff;
+      padding: 12px 18px;
+      text-decoration: none;
+      margin: 10px 0;
+      border-radius: 12px;
+      font-weight: 500;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .sidebar a:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateX(6px);
+    }
+
+    .main-content {
+      margin-left: 270px;
+      padding: 40px;
+    }
+
+    .header {
+      background: linear-gradient(90deg, #8e2de2, #4a00e0);
+      color: white;
+      padding: 25px;
+      border-radius: 12px;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .swap-card {
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+      padding: 30px;
+      max-width: 700px;
+      margin: auto;
+      margin-bottom: 40px;
+    }
+
+    .form-label { font-weight: 600; }
+
+    .btn-request {
+      background: linear-gradient(90deg, #ff9966, #ff5e62);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 25px;
+      font-size: 1rem;
+      transition: 0.3s;
+    }
+
+    .btn-request:hover {
+      opacity: 0.9;
+      transform: scale(1.02);
+    }
+
+    .history-card {
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .status-pending { color: #ff9800; font-weight: 600; }
+    .status-accepted { color: #4caf50; font-weight: 600; }
+    .status-declined { color: #f44336; font-weight: 600; }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h3>📚 BookSwap</h3>
+    <a href="{% url 'dashboard' %}">📊 Dashboard</a>
+    <a href="{% url 'my_books' %}">📚 My Books</a>
+    <a href="{% url 'swap_request' %}">🔄My Swap Requests</a>
+    <a href="{% url 'purchases' %}">🛒 Purchases</a>
+    <a href="{% url 'sales' %}">💰 Sales</a>
+    <a href="{% url 'swap_requests_received' %}">📩 Requests Received</a>
+    <a href="{% url 'review' %}">⭐ Reviews</a>
+    <a href="{% url 'settings' %}">⚙ Account Settings</a>
+    <a href="{% url 'update_profile' %}">💳 Payment</a>
+    <a href="{% url 'logout' %}">🚪 Logout</a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+
+    <!-- Header -->
+    <div class="header">
+      <h2>🔄 Book Swap</h2>
+      <p>Check your history below</p>
+    </div>
+
+    <!-- Swap Request History -->
+    <h3 class="mb-3 text-center">📜 My Swap Request History</h3>
+    {% if swap_requests %}
+      {% for req in swap_requests %}
+        <div class="history-card">
+          <h5>Requested: <strong>{{ req.requested_book.title }} ({{ req.requested_book.author }})</strong></h5>
+          <p>Offered: <em>
+            {% if req.offered_book %}
+              {{ req.offered_book.title }} ({{ req.offered_book.author }})
+            {% else %}
+              None
+            {% endif %}
+          </em></p>
+          <p>Message: {{ req.message|default:"(No message)" }}</p>
+          <p>📱 Mobile: {{ req.mobile_number|default:"Not provided" }}</p>
+          
+          <!-- ✅ IST Date/Time -->
+          <p class="small text-muted">📅 {% localtime on %}{{ req.created_at|date:"M d, Y H:i" }}{% endlocaltime %}</p>
+          
+          <p>Status: 
+            {% if req.status == "pending" %}
+              <span class="status-pending">⏳ Pending</span>
+            {% elif req.status == "accepted" %}
+              <span class="status-accepted">✅ Accepted</span>
+            {% else %}
+              <span class="status-declined">❌ Declined</span>
+            {% endif %}
+          </p>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p class="text-center text-muted">You haven’t made any swap requests yet.</p>
+    {% endif %}
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white text-center py-3 mt-5">
+      <div class="container">
+        &copy; {% localtime on %}{{ now|date:"Y" }}{% endlocaltime %} BookSwap | Swap smarter, read more 📚
+      </div>
+    </footer>
+
+  </div>
+
+</body>
+</html>
+
+
+
+
+
+
+
+

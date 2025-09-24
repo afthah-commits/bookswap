@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>BookSwap | Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {margin:0; padding:0; box-sizing:border-box; font-family: Arial, sans-serif;}
+
+    body {
+      background: url("https://images.unsplash.com/photo-1512820790803-83ca734da794?ixlib=rb-4.0.3&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1920&h=1080&fit=crop") no-repeat center center/cover;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .login-box {
+      background: rgba(0,0,0,0.8);
+      padding: 40px;
+      border-radius: 6px;
+      width: 350px;
+      color: #fff;
+    }
+
+    .login-box h2 {
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+
+    .input-box {
+      margin-bottom: 15px;
+    }
+
+    .input-box input {
+      width: 100%;
+      padding: 12px;
+      background: #333;
+      border: none;
+      border-radius: 4px;
+      color: #fff;
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 12px;
+      background: #e50914;
+      border: none;
+      border-radius: 4px;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .login-btn:hover {
+      background: #c40812;
+    }
+
+    .extra-links {
+      margin-top: 15px;
+      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .extra-links a {
+      color: #b3b3b3;
+      text-decoration: none;
+    }
+
+    .extra-links a:hover {
+      text-decoration: underline;
+    }
+
+    .signup-text {
+      margin-top: 20px;
+      font-size: 14px;
+    }
+
+    .signup-text a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-box">
+    <h2>Sign In to BookSwap</h2>
+
+    <form method="POST">
+      {% csrf_token %}
+      <div class="input-box">
+        <input type="text" name="username" placeholder="Username" required>
+      </div>
+      <div class="input-box">
+        <input type="password" name="password" placeholder="Password" required>
+      </div>
+      <button type="submit" class="login-btn">Sign In</button>
+    </form>
+
+    <div class="extra-links">
+      <a href="#">Need help?</a>
+      <a href="{% url 'signup' %}">Sign up</a>
+    </div>
+
+    <p class="signup-text">
+      New to BookSwap? <a href="{% url 'signup' %}">Create an account</a>
+    </p>
+  </div>
+</body>
+</html>
+
+
+
+

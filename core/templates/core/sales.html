@@ -1,0 +1,184 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Sales - BookSwap</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: #f4f6f9;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    /* ---------------- Sidebar ---------------- */
+    .sidebar {
+      height: 100vh;
+      width: 250px;
+      position: fixed;
+      left: 0;
+      top: 0;
+      background: linear-gradient(180deg, #2e3192 0%, #1bffff 100%);
+      color: #fff;
+      padding: 25px 15px;
+      box-shadow: 4px 0 15px rgba(0,0,0,0.15);
+    }
+
+    .sidebar h3 {
+      text-align: center;
+      font-weight: 700;
+      margin-bottom: 35px;
+      letter-spacing: 1px;
+    }
+
+    .sidebar a {
+      display: flex;
+      align-items: center;
+      color: #fff;
+      padding: 12px 18px;
+      text-decoration: none;
+      margin: 10px 0;
+      border-radius: 12px;
+      font-weight: 500;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .sidebar a:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateX(6px);
+    }
+
+    /* ---------------- Main Content ---------------- */
+    .main-content {
+      margin-left: 270px;
+      padding: 30px;
+    }
+
+    .page-header {
+      background: linear-gradient(90deg, #6a11cb, #2575fc);
+      color: white;
+      padding: 30px;
+      border-radius: 12px;
+      margin-bottom: 30px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    .sales-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 20px;
+    }
+
+    .sale-card {
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      padding: 20px;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .sale-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    }
+
+    .book-cover {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 12px;
+      margin-bottom: 10px;
+    }
+
+    .info-label {
+      font-weight: 600;
+    }
+
+    .price {
+      font-weight: bold;
+      margin-top: 6px;
+      display: block;
+    }
+
+    .status {
+      margin-top: 6px;
+      font-weight: bold;
+    }
+
+    .status.success { color: green; }
+    .status.failed { color: red; }
+    .status.initiated { color: orange; }
+
+    .no-sales {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 16px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h3>📚 BookSwap</h3>
+    <a href="{% url 'dashboard' %}">📊 Dashboard</a>
+    <a href="{% url 'my_books' %}">📚 My Books</a>
+    <a href="{% url 'swap_request' %}">🔄My Swap Requests</a>
+    <a href="{% url 'purchases' %}">🛒 Purchases</a>
+    <a href="{% url 'sales' %}">💰 Sales</a>
+    <a href="{% url 'swap_requests_received' %}">📥 Requests Received</a>
+    <a href="{% url 'review' %}">⭐ Reviews</a>
+    <a href="{% url 'settings' %}">⚙ Account Settings</a>
+    <a href="{% url 'update_profile' %}">💳 Payment Info</a>
+    <a href="{% url 'logout' %}">🚪 Logout</a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="page-header">
+      <h2>💰 My Sales</h2>
+      <p class="mb-0">Here are all the books you’ve sold and their details</p>
+    </div>
+
+    {% if sales %}
+    <div class="sales-grid">
+      {% for transaction in sales %}
+      <div class="sale-card">
+        {% if transaction.book.cover %}
+          <img src="{{ transaction.book.cover.url }}" alt="{{ transaction.book.title }}" class="book-cover">
+        {% else %}
+          <div style="width:100%; height:180px; background:#ddd; border-radius:12px; display:flex; align-items:center; justify-content:center;">
+            No Cover
+          </div>
+        {% endif %}
+
+        <p><span class="info-label">👤 Buyer:</span> {{ transaction.buyer.username }}</p>
+        <p><span class="info-label">📱 Mobile:</span> {{ transaction.buyer.profile.gpay_number|default:"N/A" }}</p>
+        <p><span class="info-label">📚 Book:</span> {{ transaction.book.title }}</p>
+        <p class="price">💵 Price: ₹{{ transaction.amount|default:transaction.book.price }}</p>
+        <p class="status {{ transaction.status }}">{{ transaction.status|title }}</p>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+      <p class="no-sales">You haven't sold any books yet.</p>
+    {% endif %}
+  </div>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
