@@ -1,6 +1,6 @@
 """
 Django settings for book_exchange project.
-Production-ready for Render deployment.
+Production-ready for Render deployment with PostgreSQL.
 """
 
 import os
@@ -29,7 +29,7 @@ INSTALLED_APPS = [
 # 🛡 Middleware
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",  # For serving static files
+    "whitenoise.middleware.WhiteNoiseMiddleware",  # Static files
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -58,19 +58,19 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "book_exchange.wsgi.application"
 
-# 🗄 Database (MySQL via environment variables)
+# 🗄 Database (PostgreSQL via env)
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": os.environ.get("DB_NAME", "books_swap"),
-        "USER": os.environ.get("DB_USER", "root"),
-        "PASSWORD": os.environ.get("DB_PASSWORD", ""),
-        "HOST": os.environ.get("DB_HOST", "localhost"),
-        "PORT": os.environ.get("DB_PORT", "3306"),
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.environ.get("DB_NAME"),
+        "USER": os.environ.get("DB_USER"),
+        "PASSWORD": os.environ.get("DB_PASSWORD"),
+        "HOST": os.environ.get("DB_HOST"),
+        "PORT": os.environ.get("DB_PORT", "5432"),
     }
 }
 
-# 🔐 Password Validation
+# 🔐 Password Validators
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
@@ -92,7 +92,7 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-# ⚡ Whitenoise for static file storage
+# ⚡ Whitenoise for static files
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # 🔧 Default Auto Field
