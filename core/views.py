@@ -9,6 +9,14 @@ from django.contrib.auth import update_session_auth_hash
 from .models import UserProfile
 from .models import Payment
 from .forms import BookForm, ReviewForm, SwapRequestForm, UserProfileForm 
+from django.urls import reverse_lazy
+from django.contrib.auth.views import (
+    PasswordResetView,
+    PasswordResetDoneView,
+    PasswordResetConfirmView,
+    PasswordResetCompleteView,
+)
+
 
 
 
@@ -147,8 +155,8 @@ def signup(request):
         email = request.POST['email']
         password = request.POST['password']
         confirm_password = request.POST['confirm_password']
-        gpay_number = request.POST.get('gpay_number')
-        place = request.POST.get('place')
+        gpay_number = request.POST.get('gpay_number', '')
+        place = request.POST.get('place', '')
 
         if password != confirm_password:
             messages.error(request, "Passwords do not match!")
@@ -158,9 +166,11 @@ def signup(request):
             messages.error(request, "Username already taken!")
             return redirect('signup')
 
+        # Create user
         user = User.objects.create_user(username=username, email=email, password=password)
 
-        profile = user.userprofile
+        # Create UserProfile safely
+        profile, created = UserProfile.objects.get_or_create(user=user)
         profile.gpay_number = gpay_number
         profile.place = place
         profile.save()
@@ -169,6 +179,7 @@ def signup(request):
         return redirect('login')
 
     return render(request, 'core/signup.html')
+
 
 
 @login_required
@@ -649,6 +660,28 @@ def seller_payments(request):
 @login_required
 def payment_success(request):
     return render(request, "core/payment_success.html")
+
+
+
+# 1️⃣ Request reset: enter email
+class CustomPasswordResetView(PasswordResetView):
+    template_name = "core/password_reset.html"
+    email_template_name = "core/password_reset_email.html"
+    subject_template_name = "core/password_reset_subject.txt"
+    success_url = reverse_lazy('password_reset_done')
+
+# 2️⃣ Email sent confirmation
+class CustomPasswordResetDoneView(PasswordResetDoneView):
+    template_name = "core/password_reset_done.html"
+
+# 3️⃣ Reset password via link
+class CustomPasswordResetConfirmView(PasswordResetConfirmView):
+    template_name = "core/password_reset_confirm.html"
+    success_url = reverse_lazy('password_reset_complete')
+
+# 4️⃣ Password reset complete
+class CustomPasswordResetCompleteView(PasswordResetCompleteView):
+    template_name = "core/password_reset_complete.html"
 
 
 

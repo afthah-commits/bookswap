@@ -1,11 +1,16 @@
 """
 Django settings for book_exchange project.
-Production-ready for Render deployment with PostgreSQL.
+Supports local MySQL development and PostgreSQL on Render.
 """
 
-import os
 from pathlib import Path
+import os
+from dotenv import load_dotenv
 
+# Load environment variables from .env
+load_dotenv()
+
+# BASE DIR
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # 🔑 Secret Key & Debug
@@ -13,7 +18,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY", "fallback-secret-key")
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
 # 🌍 Allowed Hosts
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "localhost").split(",")
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 
 # 📦 Installed Apps
 INSTALLED_APPS = [
@@ -29,7 +34,7 @@ INSTALLED_APPS = [
 # 🛡 Middleware
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",  # Static files
+    "whitenoise.middleware.WhiteNoiseMiddleware",  # Serve static files
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -58,17 +63,30 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "book_exchange.wsgi.application"
 
-# 🗄 Database (PostgreSQL via env)
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ.get("DB_NAME"),
-        "USER": os.environ.get("DB_USER"),
-        "PASSWORD": os.environ.get("DB_PASSWORD"),
-        "HOST": os.environ.get("DB_HOST"),
-        "PORT": os.environ.get("DB_PORT", "5432"),
+# 🗄 Database
+if os.environ.get("USE_POSTGRES", "False") == "True":
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.environ.get("DB_NAME"),
+            "USER": os.environ.get("DB_USER"),
+            "PASSWORD": os.environ.get("DB_PASSWORD"),
+            "HOST": os.environ.get("DB_HOST"),
+            "PORT": os.environ.get("DB_PORT", "5432"),
+        }
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.mysql",
+            "NAME": os.environ.get("LOCAL_DB_NAME", "book_exchange"),
+            "USER": os.environ.get("LOCAL_DB_USER", "root"),
+            "PASSWORD": os.environ.get("LOCAL_DB_PASSWORD", ""),
+            "HOST": os.environ.get("LOCAL_DB_HOST", "localhost"),
+            "PORT": os.environ.get("LOCAL_DB_PORT", "3306"),
+        }
+    }
+
 
 # 🔐 Password Validators
 AUTH_PASSWORD_VALIDATORS = [
@@ -84,7 +102,7 @@ TIME_ZONE = "Asia/Kolkata"
 USE_I18N = True
 USE_TZ = True
 
-# 📂 Static & Media Files
+# 📂 Static & Media
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
@@ -92,8 +110,14 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-# ⚡ Whitenoise for static files
+# ⚡ Whitenoise static files storage
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-# 🔧 Default Auto Field
+# 🔧 Default auto field
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# 📧 Email Backend
+EMAIL_BACKEND = os.environ.get(
+    "EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend"
+)
+DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "noreply@bookswap.com")
