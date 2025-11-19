@@ -122,3 +122,6 @@ websocket-client==1.9.0
 websockets==15.0.1
 whitenoise==6.11.0
 zipp==3.23.0
+gunicorn==21.2.0
+cloudinary==1.41.0
+django-cloudinary-storage==0.3.0

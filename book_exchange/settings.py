@@ -5,6 +5,7 @@ Supports local MySQL development and PostgreSQL on Render.
 
 from pathlib import Path
 import os
+import dj_database_url
 from dotenv import load_dotenv
 
 # Load environment variables from .env
@@ -28,6 +29,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "cloudinary",
+    "cloudinary_storage",
     "core",
 ]
 
@@ -64,7 +67,16 @@ TEMPLATES = [
 WSGI_APPLICATION = "book_exchange.wsgi.application"
 
 # 🗄 Database
-if os.environ.get("USE_POSTGRES", "False") == "True":
+# Prefer DATABASE_URL (e.g. Render Postgres), fallback to explicit settings.
+if os.environ.get("DATABASE_URL"):
+    DATABASES = {
+        "default": dj_database_url.config(
+            default=os.environ["DATABASE_URL"],
+            conn_max_age=600,
+            ssl_require=not DEBUG,
+        )
+    }
+elif os.environ.get("USE_POSTGRES", "False") == "True":
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
@@ -86,7 +98,6 @@ else:
             "PORT": os.environ.get("LOCAL_DB_PORT", "3306"),
         }
     }
-
 
 # 🔐 Password Validators
 AUTH_PASSWORD_VALIDATORS = [
@@ -110,8 +121,24 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
+# ☁️ Cloudinary media storage (used when CLOUDINARY_URL is set)
+CLOUDINARY_URL = os.environ.get("CLOUDINARY_URL")
+if CLOUDINARY_URL:
+    DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+
 # ⚡ Whitenoise static files storage
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+#  Security (production tuning when DEBUG=False)
+CSRF_TRUSTED_ORIGINS = (
+    os.environ.get("CSRF_TRUSTED_ORIGINS", "").split(",")
+    if os.environ.get("CSRF_TRUSTED_ORIGINS")
+    else []
+)
+SECURE_SSL_REDIRECT = not DEBUG
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
 
 # 🔧 Default auto field
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
